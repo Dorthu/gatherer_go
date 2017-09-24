@@ -11,7 +11,11 @@ import (
 
 func main() {
 	args := parse_args()
-	args.ToQueryArgs()
+	url := "http://gatherer.wizards.com/Pages/Search/Default.aspx?action=advanced"
+
+	full_result := fmt.Sprintf("%v%v", url, args)
+
+	fmt.Println(full_result)
 }
 
 func parse_args() QueryStruct {
@@ -37,28 +41,41 @@ const (
 )
 
 type QueryStruct struct {
-	//Type              string `short:"t" description:"The card type"`
-	//Suptype           string `long:"st" description:":The card's subtype"`
-	Name string `short:"n" description:"The card name" join:"+" split:" "`
-	//ConvertedManaCost string `long:"cmc" description:"The card's converted mana cast"`
-	//Color             string `short:"c" description:"The card's color"`
-	//ColorIdentiy      string `short:"i" description:"The card's color identity"`
+	Type              string `short:"t" description:"The card type" join:"+" split:" " query:"type"`
+	Suptype           string `long:"st" description:":The card's subtype" join:"+" split:" " query:"subtype"`
+	Name              string `short:"n" description:"The card name" join:"+" split:" " query:"name"`
+	ConvertedManaCost string `long:"cmc" description:"The card's converted mana cast" join:"+=" query:"cmc"`
+	Color             string `short:"c" description:"The card's color" join:"+" split:"" query:"color"`
+	ColorIdentiy      string `short:"i" description:"The card's color identity" join:"+" split:"" query:"coloridentiy"`
+	Rules             string `short:"r" description:"The card's rules test" join:"+" split:" " query:"text"`
 }
 
-func (query QueryStruct) ToQueryArgs() string {
+func (query QueryStruct) String() string {
 	ptr := reflect.ValueOf(&query)
 	val := ptr.Elem()
+
+	result := ""
 
 	for i := 0; i < val.NumField(); i++ {
 		key := val.Type().Field(i)
 		val := val.Field(i)
 
+		if val.String() == "" {
+			continue
+		}
+
+		current := fmt.Sprintf("&%v=", key.Tag.Get("query"))
+
 		parts := strings.Split(val.String(), key.Tag.Get("split"))
 
+		join := key.Tag.Get("join")
+
 		for _, c := range parts {
-			fmt.Println(key.Tag.Get("join"), c)
+			current = fmt.Sprintf("%v%v[%v]", current, join, c)
 		}
+
+		result = fmt.Sprintf("%v%v", result, current)
 	}
 
-	return ""
+	return result
 }
