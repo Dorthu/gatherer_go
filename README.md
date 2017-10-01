@@ -1,6 +1,6 @@
-# gatherer.go
+# gatherer_go
 
-A rewrite of [gatherer_cli](https://github.com/Dorthu/gatherer_cli) in gloang
+A rewrite of [gatherer_cli](https://github.com/Dorthu/gatherer_cli) in golang
 
 ### Why?
 
