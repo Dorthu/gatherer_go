@@ -103,15 +103,12 @@ func getJoin(query string, default_join string) (string, string) {
 	case '!':
 		ret = "+!"
 		q = query[1:]
-		break
 	case '+':
 		ret = "+"
 		q = query[1:]
-		break
 	case '|':
 		ret = "|"
 		q = query[1:]
-		break
 	}
 	return q, ret
 }
